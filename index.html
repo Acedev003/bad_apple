@@ -2,6 +2,10 @@
 <html>
     <head>
         <style>
+            html,body
+            {
+                background-color: #E5F4E3;
+            }
             div{
                 text-align: center;
                 line-height: 0px;
@@ -10,15 +14,14 @@
             {
                 margin: 0px;
                 padding: 0px;
+                accent-color: #464646;
+                pointer-events: none;
             }
         </style>
     </head>
     <body>
         <div id="screen">
             <button id="start_button">Start</button>  
-        </div>
-        <div id="control_disp" style="display:none">
-            <video id="video" src="videos/badapple.webm" autoplay controls></video><br>
         </div>
         <script src="js/badapple.js"></script>
     </body>
