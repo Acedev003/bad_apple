@@ -1,8 +1,10 @@
 let screen    = document.getElementById("screen");
-let ctrl_disp = document.getElementById("control_disp");
 
 let video  = document.createElement("video");
 let canvas = document.createElement("canvas");
+
+
+let checkboxes = [];
 
 let vid_w = 100;
 let vid_h = 75;
@@ -22,31 +24,51 @@ strt_button.onclick = () =>{
 
 
 let playVideo = (parent) =>{
-    let checkboxes = [];
     let left = 0;
     let top  = 0;    
 
     parent.style.height = (13*75) + "px";
     parent.style.width =  (13*100) + "px";
 
-    for(let i = 0; i < vid_h; i++)
+    if(window.Worker)
     {
-        for(let j = 0; j < vid_w; j++)
+        const worker = new Worker("js/worker.js");
+        worker.postMessage(["init_elements",vid_h,vid_w]);
+        worker.onmessage = (event) =>{
+            window.requestAnimationFrame(()=>{
+                parent.innerHTML = event.data;
+                startVideo();
+            })
+        };
+
+        checkboxes = document.getElementsByTagName("input");
+    }
+    else
+    {
+        for (let i = 0; i < vid_h; i++) 
         {
-            let input  = document.createElement("input");
-            input.type = "checkbox";
-            input.style.left = left + "px";
-            input.style.top  = top  + "px";
-            left+=13;
-            parent.appendChild(input);
-            checkboxes.push(input);
+            for (let j = 0; j < vid_w; j++) 
+            {
+                let input = document.createElement("input");
+                input.type = "checkbox";
+                input.style.left = left + "px";
+                input.style.top = top + "px";
+                left += 13;
+                parent.appendChild(input);
+                checkboxes.push(input);
+            }
+            top += 13;
+            left = 0;
         }
-        top  += 13;
-        left  = 0;
-        let br = document.createElement("br");
-        parent.appendChild(br); 
+        startVideo();
     }
     
+    
+};
+
+
+let startVideo = ()=>
+{
     let context  = canvas.getContext("2d");
     let clck_cnt = 0;
     parent.onclick = () =>{
@@ -91,5 +113,4 @@ let playVideo = (parent) =>{
     };
 
     video.requestVideoFrameCallback(draw);
-};
-
+}
