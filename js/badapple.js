@@ -67,7 +67,7 @@ let playVideo = (parent) =>{
     video.play();
     let count = 0;
     let draw = (now, metadata) => {
-        if(count%2==0)
+        if(count%3==0)
         {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             let data = context.getImageData(0, 0, canvas.width, canvas.height);
