@@ -1,47 +1,73 @@
-let screen    = document.getElementById("screen");
+let startVideo = (element,video_src,video_width,video_height) => {
 
-let video  = document.createElement("video");
-let canvas = document.createElement("canvas");
+    let screen = element.parentElement;
+    let video  = document.createElement("video");
+    let canvas = document.createElement("canvas");
+    
+    let checkbox_s = 0;
+    let checkboxes = [];
 
+    let original_screen_state = [screen.innerHTML,screen.style];
 
-let checkboxes = [];
+    let vid_w = video_width;
+    let vid_h = video_height;
+    let scrnw = 0;
+    let scrnh = 0;
 
-let vid_w = 100;
-let vid_h = 75;
+    let left = 0;
+    let top  = 0;
 
-let strt_button = document.getElementById("start_button");
-strt_button.onclick = () =>{
-    strt_button.style.display = "none";
-
-    video.src = "videos/badapple.webm";
+    if(!video_src)
+    {
+        console.error("Video source can't be empty");
+        return false;
+    }
+    video.src = video_src;
 
     canvas.width  = vid_w;
     canvas.height = vid_h;
 
-    playVideo(screen);
+    screen.innerHTML        = "";
+    screen.style.position   = "absolute";
+    screen.style.width      = "100%";
+    screen.style.height     = "100%";
+    screen.style.margin     = "0px";
+    screen.style.padding    = "0px";
+    screen.style.lineHeight = "0px";
+    screen.style.display    = "block";
 
-};
+    scrnw = screen.clientWidth;
+    scrnh = screen.clientHeight;
+    
 
+    if(scrnw < vid_w)
+    {
+        console.error("Screen too small to display video. Reduce video dimensions");
+        return false;
+    }
 
-let playVideo = (parent) =>{
-    let left = 0;
-    let top  = 0;    
+    if(scrnw < scrnh)
+    {
+        checkbox_s = parseInt(scrnw/vid_w);
+    }
+    else
+    {
+        checkbox_s = parseInt(scrnh/vid_h);
+    }
 
-    parent.style.height = (13*75) + "px";
-    parent.style.width =  (13*100) + "px";
 
     if(window.Worker)
     {
         const worker = new Worker("js/worker.js");
-        worker.postMessage(["init_elements",vid_h,vid_w]);
+        worker.postMessage(["init_elements",vid_h,vid_w,checkbox_s]);
         worker.onmessage = (event) =>{
             window.requestAnimationFrame(()=>{
-                parent.innerHTML = event.data;
-                startVideo();
+                screen.innerHTML = event.data;
+
+                checkboxes = document.getElementsByTagName("input");
+                //startVideo();
             })
         };
-
-        checkboxes = document.getElementsByTagName("input");
     }
     else
     {
@@ -49,26 +75,22 @@ let playVideo = (parent) =>{
         {
             for (let j = 0; j < vid_w; j++) 
             {
-                let input = document.createElement("input");
+                let input  = document.createElement("input");
                 input.type = "checkbox";
-                input.style.left = left + "px";
-                input.style.top = top + "px";
-                left += 13;
+                input.style.top    = top + "px";
+                input.style.left   = left + "px";
+                input.style.width  = checkbox_s + "px";
+                input.style.height = checkbox_s + "px";
                 parent.appendChild(input);
                 checkboxes.push(input);
+                left += checkbox_s;
             }
-            top += 13;
+            top += checkbox_s;
             left = 0;
         }
-        startVideo();
+
     }
-    
-    
-};
 
-
-let startVideo = ()=>
-{
     let context  = canvas.getContext("2d");
     let clck_cnt = 0;
     parent.onclick = () =>{
@@ -85,11 +107,11 @@ let startVideo = ()=>
             }
         }
     };
-    
+
     video.play();
     let count = 0;
     let draw = (now, metadata) => {
-        if(count%3==0)
+        if(count%2==0)
         {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             let data = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -99,11 +121,18 @@ let startVideo = ()=>
             for (let i = 0; i < pix.length; i += 4) {
                 let greyscale = (pix[i] + pix[i + 1] + pix[i + 2]) / 3;
 
-                if (greyscale    < 127.5) {
-                    checkboxes[i / 4].checked = false;
+                try
+                {
+                    if (greyscale    < 127.5) {
+                        checkboxes[i / 4].checked = false;
+                    }
+                    else {
+                        checkboxes[i / 4].checked = true;
+                    }
                 }
-                else {
-                    checkboxes[i / 4].checked = true;
+                catch
+                {
+                    
                 }
 
             }
@@ -113,4 +142,10 @@ let startVideo = ()=>
     };
 
     video.requestVideoFrameCallback(draw);
-}
+    
+    
+
+    screen.innerHTML = original_screen_state[0];
+    screen.style     = original_screen_state[1];
+
+};

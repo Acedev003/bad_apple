@@ -5,6 +5,8 @@ self.onmessage = (event)=>{
     {
         let vid_h = data[1];
         let vid_w = data[2];
+        
+        let checkbox_s = data[3]; 
 
         let text = "";
         let left = 0;
@@ -13,10 +15,10 @@ self.onmessage = (event)=>{
         {
             for (let j = 0; j < vid_w; j++) 
             {
-                text += `<input type='checkbox' style='left:${left}px;top:${top}px'>`;
-                left += 13;
+                text += `<input type='checkbox' style='left:${left}px;top:${top}px;width:${checkbox_s}px;height:${checkbox_s}px'>`;
+                left += checkbox_s;
             }
-            top += 13;
+            top += checkbox_s;
             left = 0;
         }
         postMessage(text);

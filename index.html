@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Bad Apple - Checkbox Edition</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="assets/icon-48.png" rel="icon">
+        <script src="js/badapple.js"></script>
         <style>
             html,body
             {
-                background-color: #E5F4E3;
+                background-color: #F3EFE0;
+                padding: 0px;
+                margin: 0px;
             }
             div{
-                text-align: center;
-                line-height: 0px;
-                position: relative;
                 margin: 10px;
+                text-align: center;
+                position: relative;
             }
             input
             {
                 margin: 0px;
                 padding: 0px;
-                accent-color: #464646;
-                pointer-events: none;
-                box-sizing: content-box;
                 border: 0px;
-                cursor: none;
                 position: absolute;
+                box-sizing: content-box;
+                accent-color: #434242;
             }
         </style>
     </head>
     <body>
-        <div id="screen">
-            <button id="start_button">Start</button>  
+        <div>
+            <button onclick="startVideo(this,'assets/badapple.webm',100,75)">Start</button>  
+            <h3>This is what checkboxes were originally designed for . . . </h3>
+            <br>
         </div>
-        <script src="js/badapple.js"></script>
     </body>
 </html>
