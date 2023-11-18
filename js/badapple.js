@@ -108,7 +108,6 @@ let startVideo = (element,video_src,video_width,video_height) => {
         }
     };
 
-    video.play();
     let count = 0;
     let draw = (now, metadata) => {
         if(count%2==0)
@@ -141,8 +140,15 @@ let startVideo = (element,video_src,video_width,video_height) => {
         video.requestVideoFrameCallback(draw);
     };
 
-    video.requestVideoFrameCallback(draw);
-    
+    try {
+        video.requestVideoFrameCallback(draw);
+        video.play();
+    }
+    catch(err) 
+    {
+        alert("Kindly use a browser with support for  HTMLVideoElement API: requestVideoFrameCallback ")
+        video.src = "";
+    }
     
 
     screen.innerHTML = original_screen_state[0];
